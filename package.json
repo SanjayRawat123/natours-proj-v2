@@ -1,0 +1,23 @@
+{
+  "name": "natours",
+  "version": "1.0.0",
+  "description": "Learning node.js , express , mongodb",
+  "main": "app.js",
+  "scripts": {
+   "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SanjayRawat123/natours-proj-v2"
+  },
+  "author": "Sanjay",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SanjayRawat123/natours-proj-v2/issues"
+  },
+  "homepage": "https://github.com/SanjayRawat123/natours-proj-v2#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
+  }
+}
