@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const tourRouters = require('./routes/tourRoute');
 const userRouters = require('./routes/userRoute');
+
 const app = express();
 
 //1] Middlewares
