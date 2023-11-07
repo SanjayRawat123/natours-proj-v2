@@ -1,4 +1,12 @@
 const Tour = require('../models/tourModel');
+const APIFeatures = require("../utils/apiFeatures")
+
+exports.aliasTopTour = async (req, res, next) => {
+    req.query.limit = '5';
+    req.query.sort = '-ratingsAverage,price';
+    req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+    next();
+}
 
 exports.createTour = async (req, res) => {
     try {
@@ -19,7 +27,9 @@ exports.createTour = async (req, res) => {
         })
     }
 
-}
+};
+
+
 
 exports.getAllTours = async (req, res) => {
     try {
@@ -27,57 +37,62 @@ exports.getAllTours = async (req, res) => {
 
         //Build query
         // 1A) Filtering
-        const queryObj = { ...req.query };
-        const excluedFields = ['page', 'sort', 'limit', 'fields'];
-        excluedFields.forEach(el => delete queryObj[el])
+        // const queryObj = { ...req.query };
+        // const excluedFields = ['page', 'sort', 'limit', 'fields'];
+        // excluedFields.forEach(el => delete queryObj[el])
 
-        // 1B) : Advance filtering
-        //converting queryObj object in string 
-        let qureyStr = JSON.stringify(queryObj);
-        qureyStr = qureyStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-        console.log(JSON.parse(qureyStr))
+        // // 1B) : Advance filtering
+        // //converting queryObj object in string 
+        // let qureyStr = JSON.stringify(queryObj);
+        // qureyStr = qureyStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+        // console.log(JSON.parse(qureyStr))
 
-        //{ difficulty: 'easy', duration:{$gte:5}}
-        //{ difficulty: 'easy', duration:{gte:5}}
-        //gte,gt,lge,lt
+        // //{ difficulty: 'easy', duration:{$gte:5}}
+        // //{ difficulty: 'easy', duration:{gte:5}}
+        // //gte,gt,lge,lt
 
-        let query = Tour.find(JSON.parse(qureyStr));
+        // let query = Tour.find(JSON.parse(qureyStr));
 
         //2) Sorting 
         // http://localhost:3000/api/v1/tours?sort=price,ratingsAverage
-        if (req.query.sort) {
-            const sortBy = req.query.sort.split(',').join(' ');
-            console.log(sortBy)
-            query = query.sort(sortBy)
-        } else {
-            query = query.sort('-createdAt');
-        }
+        // if (req.query.sort) {
+        //     const sortBy = req.query.sort.split(',').join(' ');
+        //     console.log(sortBy)
+        //     query = query.sort(sortBy)
+        // } else {
+        //     query = query.sort('-createdAt');
+        // }
 
         //3) Field limiting
-        //http://localhost:3000/api/v1/tours?fields=name,duration
-        if (req.query.fields) {
-            const fields = req.query.fields.split(',').join(' ');
-            query = query.select(fields);
-        } else {
-            query = query.select('-__v');
-        }
 
-        //4)Pagination
-        //    http://localhost:3000/api/v1/tours?page=1&limit=3
-        const page = req.query.page * 1 ||1;
-        const limit =req.query.limit * 1 ||100;
-        const skip = (page - 1 )*limit;
-        query = query.skip(skip).limit(limit)
+        // if (req.query.fields) {
+        //     const fields = req.query.fields.split(',').join(' ');
+        //     query = query.select(fields);
+        // } else {
+        //     query = query.select('-__v');
+        // }
 
-        if(req.query.page){
-            const numTours = await Tour.countDocuments();
-            if(skip>=numTours) throw new Error('This page not exist')
-        }
+        // //4)Pagination
+        // //    http://localhost:3000/api/v1/tours?page=1&limit=3
+        // const page = req.query.page * 1 || 1;
+        // const limit = req.query.limit * 1 || 100;
+        // const skip = (page - 1) * limit;
+        // query = query.skip(skip).limit(limit)
+
+        // if (req.query.page) {
+        //     const numTours = await Tour.countDocuments();
+        //     if (skip >= numTours) throw new Error('This page not exist')
+        // }
 
         //ExcuteQuery
-        const tours = await query;
-        
-        
+        const features = new APIFeatures(Tour.find(), req.query)
+            .filter()
+            .sort()
+            .fieldLimiting()
+            .paginate();
+        const tours = await features.query;
+
+
 
         // const query = await Tour.find()
         // .where('duration')
