@@ -1,5 +1,9 @@
+/* eslint-disable no-unused-expressions */
 const express = require('express');
 const morgan = require('morgan');
+
+const globalErrorHandler = require('./controller/errorController') ;
+const AppError = require('./utils/appError')
 const tourRouters = require('./routes/tourRoute');
 const userRouters = require('./routes/userRoute');
 
@@ -28,5 +32,11 @@ app.use((req, res, next) => {
 
 app.use('/api/v1/tours', tourRouters);
 app.use('/api/v1/users', userRouters);
+
+app.all('*', (req,res,next)=>{
+   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+})
+
+app.use(globalErrorHandler)
 module.exports = app;
 
