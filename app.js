@@ -14,6 +14,9 @@ console.log(process.env.NODE_ENV);
 if(process.env.NODE_ENV === 'development'){
   app.use(morgan('dev'));
   console.log("okay master")
+// eslint-disable-next-line no-undef
+}else if (process.env.NODE_ENV === 'production'){
+  console.log("okay client")
 }
 
 app.use(express.json());
