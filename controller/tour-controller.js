@@ -185,7 +185,7 @@ exports.deleteTour = catchAsync(async (req, res,next) => {
     if(!tour){
         return next (new AppError ('no tour found with id ', 404) );
     }
-    res.status(200).json({
+    res.status(204).json({
         status: 'success',
         data: null
     });
@@ -263,3 +263,4 @@ exports.getMonthlyPlan = catchAsync(async (req, res,next) => {
         }
     });
 });
+
