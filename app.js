@@ -11,6 +11,7 @@ const globalErrorHandler = require('./controller/errorController');
 const AppError = require('./utils/appError')
 const tourRouters = require('./routes/tourRoute');
 const userRouters = require('./routes/userRoute');
+const reviewRouters = require('./routes/reviewRoute');
 
 const app = express();
 
@@ -72,6 +73,7 @@ app.use(
 //3) Routes
 app.use('/api/v1/tours', tourRouters);
 app.use('/api/v1/users', userRouters);
+app.use('/api/v1/review',reviewRouters)
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
