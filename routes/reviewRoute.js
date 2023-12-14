@@ -4,6 +4,8 @@ const authController = require('../controller/authController');
 const reviewController = require('../controller/reviewController')
 
 const router = express.Router({ mergeParams: true });
+// POST /tour/234fad4/reviews
+// POST /reviews
 
 router
     .route('/')
@@ -14,5 +16,7 @@ router
         // reviewController.setTourUserIds,
         reviewController.createReview
     );
+  
+    
 
 module.exports = router;
