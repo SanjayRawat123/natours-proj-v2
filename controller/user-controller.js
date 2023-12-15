@@ -3,6 +3,7 @@ const AppError = require('../utils/appError');
 // const APIFeatures = require("../utils/apiFeatures");
 // const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync')
+const factory = require('./handlerFactory');
 
 const filterObj = (obj, ...allowedFields) => {
     const newObj = {};
@@ -76,17 +77,6 @@ exports.createUser = (req, res) => {
     });
 };
 
-exports.UpdateUser = (req, res) => {
-
-    res.status(500).json({
-        status: 'error',
-        message: 'this route is not implemented'
-    });
-};
-exports.deleteUser = (req, res) => {
-
-    res.status(500).json({
-        status: 'error',
-        message: 'this route is not implemented'
-    });
-};
+//Do not Update password with this !
+exports.UpdateUser =factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);

@@ -1,5 +1,5 @@
 const express = require('express');
-const tourController = require('../controller/tour-controller');
+// const tourController = require('../controller/tour-controller');
 const authController = require('../controller/authController');
 const reviewController = require('../controller/reviewController')
 
@@ -13,10 +13,11 @@ router
     .post(
         authController.protect,
         authController.restrictTo('user'),
-        // reviewController.setTourUserIds,
+        reviewController.setTourUserIds,
         reviewController.createReview
     );
   
-    
-
+router.route('/:id')
+      .delete(reviewController.deleteReview)  
+      .patch(reviewController.updateReview)
 module.exports = router;
