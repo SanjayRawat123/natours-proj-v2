@@ -1,5 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable no-unused-expressions */
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -15,8 +14,14 @@ const reviewRouters = require('./routes/reviewRoute');
 
 const app = express();
 
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 // 1) GLOBAL MIDDLEWARES
 console.log(process.env.NODE_ENV);
+// Serving static files
+app.use(express.static('./public'));
+
 
 // Set security HTTP headers
 app.use(helmet());
@@ -39,8 +44,7 @@ app.use('/api', limiter);
 // Body parser, reading data from body into req.body
 app.use(express.json({limit:'10kb'}));
 
-//// Serving static files
-app.use(express.static(`${__dirname}/public`));
+
 
 // Test middleware
 app.use((req, res, next) => {
@@ -71,6 +75,13 @@ app.use(
 );
 
 //3) Routes
+app.get('/',(req,res)=>{
+  res.status(200).render('base',{
+    tour:'The Forest Hiker',
+    user:'Jonas'
+
+  })
+})
 app.use('/api/v1/tours', tourRouters);
 app.use('/api/v1/users', userRouters);
 app.use('/api/v1/reviews',reviewRouters)
