@@ -1,5 +1,6 @@
 const path = require('path');
 const express = require('express');
+const cors = require('cors');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -12,10 +13,10 @@ const AppError = require('./utils/appError')
 const tourRouters = require('./routes/tourRoute');
 const userRouters = require('./routes/userRoute');
 const reviewRouters = require('./routes/reviewRoute');
-const viewRouter=require('./routes/viewRoutes');
+
 
 const app = express();
-
+app.use(cors());
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -36,7 +37,7 @@ if (process.env.NODE_ENV === 'development') {
 
 // Limit requests from same API
 const limiter = rateLimit({
-  max: 100,
+  max: 1000,
   windowMs: 60 * 60 * 1000,
   message: 'Too many requests from this IP, please try again in an hour!'
 });
@@ -51,7 +52,7 @@ app.use(cookieParser());
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   // console.log(req.headers)
-  console.log(req.cookies);
+  // console.log(req.cookies);
   next();
 })
 
@@ -78,7 +79,6 @@ app.use(
 
 //3) Routes
 
-app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouters);
 app.use('/api/v1/users', userRouters);
 app.use('/api/v1/reviews',reviewRouters)

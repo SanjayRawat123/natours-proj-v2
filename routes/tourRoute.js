@@ -30,14 +30,14 @@ router.route('/distances/:latlng/unit/:unit').get(tourController.getDistances);
 
 router
     .route('/')
-    .get(authController.protect, tourController.getAllTours)
+    .get( tourController.getAllTours)
     .post(authController.protect,authController.restrictTo('admin','lead-guide'),tourController.createTour);
 router
     .route('/:id')
-    .delete(authController.protect,
+    .delete(authController.isLoggedIn,
         authController.restrictTo('admin', 'lead-guide'),
         tourController.deleteTour)
-    .get(tourController.getTourById)
+    .get(authController.protect,tourController.getTourById)
     .patch(authController.protect,
         authController.restrictTo('admin', 'lead-guide'),tourController.updateTour);
 
