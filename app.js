@@ -1,4 +1,3 @@
-const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -17,8 +16,6 @@ const reviewRouters = require('./routes/reviewRoute');
 
 const app = express();
 app.use(cors());
-app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, 'views'));
 
 // 1) GLOBAL MIDDLEWARES
 console.log(process.env.NODE_ENV);
