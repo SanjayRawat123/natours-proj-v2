@@ -1,6 +1,29 @@
 // first install node mailer npm i nodemailer
 const nodemailer = require('nodemailer');
 const htmlToText = require('html-to-text');
+const fs = require('fs');
+const path = require('path');
+
+function readHTMLTemplate(templateName) {
+  try {
+    // ../public/${templateName}.html
+    const templatePath = path.join(__dirname, '..', 'public', `${templateName}.html`); // Path to your HTML templates
+    const htmlTemplate = fs.readFileSync(templatePath, 'utf-8');
+    return htmlTemplate;
+  } catch (error) {
+    console.error('Error reading template file:', error);
+    return null;
+  }
+}
+
+function replacePlaceholders(template, data) {
+  let replacedTemplate = template;
+  Object.keys(data).forEach(key => {
+    const regex = new RegExp(`{{${key}}}`, 'g');
+    replacedTemplate = replacedTemplate.replace(regex, data[key]);
+  });
+  return replacedTemplate;
+}
 
 module.exports = class Email {
   constructor(user, url) {
@@ -14,7 +37,13 @@ module.exports = class Email {
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
       //Sendgrid
-      return 1;
+      return nodemailer.createTransport({
+        service: 'SendGrid',
+        auth: {
+          user: process.env.SENDGRID_USERNAME,
+          pass: process.env.SENDGRID_PASSWORD
+        }
+      });
     }
 
     return nodemailer.createTransport({
@@ -28,43 +57,51 @@ module.exports = class Email {
 
   }
 
- async send(template, subject) {
+  async send(template, subject) {
     // 1) Render HTML based
-    const html = `
-                  <!DOCTYPE html>
-                  <html>
-                  <head>
-                    <title>${subject}</title>
-                  </head>
-                  <body>
-                    <div style="font-family: Arial, sans-serif; padding: 20px;">
-                      <h1>${subject}</h1>
-                      <p>Hello,</p>
-                      <p>This is a sample email template.</p>
-                      <p>You can customize this template with dynamic content.</p>
-                    </div>
-                  </body>
-                  </html>
-                  `;
-    // 2) Define email options here
-    const mailOptions = {
-      from: this.from,
-      to: this.to,
-      subject,
-      text: htmlToText.fromString(html),
-      html
-    };
+    const htmlTemplate = readHTMLTemplate(template);
 
-    //3) create transport and send email 
-   
-      await  this.newTransport().sendMail(mailOptions);
-   
+    if (htmlTemplate) {
+      const userData = {
+        USERNAME: this.firstName,
+        EMAIL: this.to,
+        RESET_LINK: this.url
+      };
 
+      const replacedTemplate = replacePlaceholders(htmlTemplate, userData);
+
+      const options = {
+        wordwrap: 130,
+        // ...
+      };
+      const compiledConvert = htmlToText.compile(options); // options passed here
+      const text = compiledConvert(replacedTemplate);
+      console.log(text);
+      // 2) Define email options here
+      const mailOptions = {
+        from: this.from,
+        to: this.to,
+        subject,
+        html: replacedTemplate,
+        text: text
+      };
+
+      //3) create transport and send email 
+
+      await this.newTransport().sendMail(mailOptions);
+
+
+    }
+  };
+
+  async sendWelcome() {
+    await this.send('welcome', "Welcome to the Sanjay's family !");
   }
 
- async sendWelcome() {
-   await this.send('welcome', "Welcome to the Sanjay's family !");
+  async sendResetPassword() {
+    await this.send('restPassword',
+      'Your password reset token (valid for only 10 minutes)');
   }
+
 
 };
-

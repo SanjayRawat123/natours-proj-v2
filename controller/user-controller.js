@@ -3,8 +3,6 @@ const sharp = require('sharp');
 
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
-// const APIFeatures = require("../utils/apiFeatures");
-// const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync')
 const factory = require('./handlerFactory');
 
